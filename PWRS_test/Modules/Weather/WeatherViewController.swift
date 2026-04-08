@@ -153,12 +153,18 @@ final class WeatherViewController: UIViewController {
         errorLabel.translatesAutoresizingMaskIntoConstraints = false
         errorView.addSubview(errorLabel)
 
-        retryButton.setTitle("Повторить", for: .normal)
-        retryButton.titleLabel?.font = .systemFont(ofSize: 17, weight: .semibold)
-        retryButton.setTitleColor(.white, for: .normal)
-        retryButton.backgroundColor = UIColor.white.withAlphaComponent(0.25)
-        retryButton.layer.cornerRadius = 22
-        retryButton.contentEdgeInsets = UIEdgeInsets(top: 12, left: 32, bottom: 12, right: 32)
+        var config = UIButton.Configuration.filled()
+        config.title = "Повторить"
+        config.baseForegroundColor = .white
+        config.baseBackgroundColor = UIColor.white.withAlphaComponent(0.25)
+        config.contentInsets = NSDirectionalEdgeInsets(top: 12, leading: 32, bottom: 12, trailing: 32)
+        config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { attrs in
+            var updated = attrs
+            updated.font = .systemFont(ofSize: 17, weight: .semibold)
+            return updated
+        }
+        config.background.cornerRadius = 22
+        retryButton.configuration = config
         retryButton.translatesAutoresizingMaskIntoConstraints = false
         retryButton.addTarget(self, action: #selector(retryTapped), for: .touchUpInside)
         errorView.addSubview(retryButton)
@@ -582,55 +588,6 @@ final class DailyRowView: UIView {
             rainLabel.widthAnchor.constraint(equalToConstant: 36),
             tempLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
             tempLabel.centerYAnchor.constraint(equalTo: centerYAnchor)
-        ])
-    }
-
-    required init?(coder: NSCoder) { fatalError() }
-}
-
-// MARK: - DetailCell
-
-final class DetailCell: UIView {
-
-    init(icon: String, title: String, value: String) {
-        super.init(frame: .zero)
-        backgroundColor = UIColor.white.withAlphaComponent(0.12)
-        layer.cornerRadius = 12
-        translatesAutoresizingMaskIntoConstraints = false
-
-        let iconView = UIImageView(image: UIImage(systemName: icon))
-        iconView.tintColor = UIColor.white.withAlphaComponent(0.7)
-        iconView.contentMode = .scaleAspectFit
-        iconView.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(iconView)
-
-        let titleLabel = UILabel()
-        titleLabel.text = title
-        titleLabel.font = .systemFont(ofSize: 11, weight: .semibold)
-        titleLabel.textColor = UIColor.white.withAlphaComponent(0.6)
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(titleLabel)
-
-        let valueLabel = UILabel()
-        valueLabel.text = value
-        valueLabel.font = .systemFont(ofSize: 22, weight: .medium)
-        valueLabel.textColor = .white
-        valueLabel.numberOfLines = 0
-        valueLabel.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(valueLabel)
-
-        NSLayoutConstraint.activate([
-            iconView.topAnchor.constraint(equalTo: topAnchor, constant: 14),
-            iconView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 14),
-            iconView.widthAnchor.constraint(equalToConstant: 18),
-            iconView.heightAnchor.constraint(equalToConstant: 18),
-            titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 14),
-            titleLabel.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 6),
-            titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -14),
-            valueLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 6),
-            valueLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 14),
-            valueLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -14),
-            valueLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -14)
         ])
     }
 
