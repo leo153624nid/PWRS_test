@@ -59,6 +59,11 @@ final class WeatherViewController: UIViewController {
     // Data
     private var currentDisplayModel: WeatherDisplayModel?
 
+    // Layout
+    private var headerTopConstraint: NSLayoutConstraint?
+    private var cardLeadingConstraints: [NSLayoutConstraint] = []
+    private var cardTrailingConstraints: [NSLayoutConstraint] = []
+
     // MARK: - Init
 
     init() {
@@ -89,6 +94,39 @@ final class WeatherViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         gradientLayer.frame = view.bounds
+    }
+
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        coordinator.animate(alongsideTransition: { [weak self] _ in
+            self?.updateLayoutForOrientation(size: size)
+        })
+    }
+
+    // MARK: - Orientation Adaptation
+
+    private var isLandscape: Bool {
+        view.bounds.width > view.bounds.height
+    }
+
+    private func updateLayoutForOrientation(size: CGSize? = nil) {
+        let landscape = size.map { $0.width > $0.height } ?? isLandscape
+
+        // Adjust header top spacing
+        headerTopConstraint?.constant = landscape ? 20 : 60
+
+        // Adjust header font sizes
+        cityLabel.font = .systemFont(ofSize: landscape ? 22 : 32, weight: .medium)
+        temperatureLabel.font = .systemFont(ofSize: landscape ? 56 : 96, weight: .thin)
+        conditionLabel.font = .systemFont(ofSize: landscape ? 16 : 22, weight: .regular)
+        feelsLikeLabel.font = .systemFont(ofSize: landscape ? 13 : 17)
+
+        // Adjust card side insets to respect safe area in landscape
+        let sideInset: CGFloat = landscape ? 60 : 16
+        cardLeadingConstraints.forEach { $0.constant = sideInset }
+        cardTrailingConstraints.forEach { $0.constant = -sideInset }
+
+        view.layoutIfNeeded()
     }
 
     // MARK: - Gradient
@@ -195,6 +233,7 @@ final class WeatherViewController: UIViewController {
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.showsVerticalScrollIndicator = false
         scrollView.isHidden = true
+        scrollView.contentInsetAdjustmentBehavior = .automatic
         view.addSubview(scrollView)
 
         contentView.translatesAutoresizingMaskIntoConstraints = false
@@ -245,8 +284,11 @@ final class WeatherViewController: UIViewController {
         feelsLikeLabel.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(feelsLikeLabel)
 
+        let topConstraint = cityLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 60)
+        headerTopConstraint = topConstraint
+
         NSLayoutConstraint.activate([
-            cityLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 60),
+            topConstraint,
             cityLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             cityLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             temperatureLabel.topAnchor.constraint(equalTo: cityLabel.bottomAnchor, constant: 4),
@@ -281,10 +323,15 @@ final class WeatherViewController: UIViewController {
         hourlyCollectionView.register(HourlyCell.self, forCellWithReuseIdentifier: HourlyCell.reuseID)
         hourlyCard.addSubview(hourlyCollectionView)
 
+        let hourlyLeading = hourlyCard.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16)
+        let hourlyTrailing = hourlyCard.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16)
+        cardLeadingConstraints.append(hourlyLeading)
+        cardTrailingConstraints.append(hourlyTrailing)
+
         NSLayoutConstraint.activate([
             hourlyCard.topAnchor.constraint(equalTo: feelsLikeLabel.bottomAnchor, constant: 28),
-            hourlyCard.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            hourlyCard.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            hourlyLeading,
+            hourlyTrailing,
             hourlyTitleLabel.topAnchor.constraint(equalTo: hourlyCard.topAnchor, constant: 12),
             hourlyTitleLabel.leadingAnchor.constraint(equalTo: hourlyCard.leadingAnchor, constant: 16),
             hourlyTitleLabel.trailingAnchor.constraint(equalTo: hourlyCard.trailingAnchor, constant: -16),
@@ -315,10 +362,15 @@ final class WeatherViewController: UIViewController {
         dailyStackView.translatesAutoresizingMaskIntoConstraints = false
         dailyCard.addSubview(dailyStackView)
 
+        let dailyLeading = dailyCard.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16)
+        let dailyTrailing = dailyCard.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16)
+        cardLeadingConstraints.append(dailyLeading)
+        cardTrailingConstraints.append(dailyTrailing)
+
         NSLayoutConstraint.activate([
             dailyCard.topAnchor.constraint(equalTo: hourlyCard.bottomAnchor, constant: 16),
-            dailyCard.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            dailyCard.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            dailyLeading,
+            dailyTrailing,
             dailyTitleLabel.topAnchor.constraint(equalTo: dailyCard.topAnchor, constant: 12),
             dailyTitleLabel.leadingAnchor.constraint(equalTo: dailyCard.leadingAnchor, constant: 16),
             dailyTitleLabel.trailingAnchor.constraint(equalTo: dailyCard.trailingAnchor, constant: -16),
@@ -338,10 +390,15 @@ final class WeatherViewController: UIViewController {
         detailsGridView.translatesAutoresizingMaskIntoConstraints = false
         detailsCard.addSubview(detailsGridView)
 
+        let detailsLeading = detailsCard.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16)
+        let detailsTrailing = detailsCard.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16)
+        cardLeadingConstraints.append(detailsLeading)
+        cardTrailingConstraints.append(detailsTrailing)
+
         NSLayoutConstraint.activate([
             detailsCard.topAnchor.constraint(equalTo: dailyCard.bottomAnchor, constant: 16),
-            detailsCard.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            detailsCard.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            detailsLeading,
+            detailsTrailing,
             detailsCard.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -32),
             detailsGridView.topAnchor.constraint(equalTo: detailsCard.topAnchor, constant: 16),
             detailsGridView.leadingAnchor.constraint(equalTo: detailsCard.leadingAnchor, constant: 16),
