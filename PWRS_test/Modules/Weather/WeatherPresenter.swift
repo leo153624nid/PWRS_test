@@ -6,7 +6,7 @@
 //  Receives domain WeatherData, formats it into WeatherDisplayModel, updates View.
 //
 
-import Foundation
+import UIKit
 
 final class WeatherPresenter: WeatherPresenterProtocol {
 
