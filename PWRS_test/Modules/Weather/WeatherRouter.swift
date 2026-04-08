@@ -36,4 +36,9 @@ final class WeatherRouter: WeatherRouterProtocol {
 
         return view
     }
+
+    func showInfo(from viewController: UIViewController) {
+        let infoModule = InfoRouter.buildModule()
+        viewController.present(infoModule, animated: true)
+    }
 }

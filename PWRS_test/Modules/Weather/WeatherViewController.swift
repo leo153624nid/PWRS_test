@@ -88,7 +88,26 @@ final class WeatherViewController: UIViewController {
         setupLoadingView()
         setupErrorView()
         setupScrollContent()
+        setupInfoButton()
         presenter?.viewDidLoad()
+    }
+
+    private func setupInfoButton() {
+        let button = UIButton(type: .system)
+        let image = UIImage(systemName: "info.circle", withConfiguration: UIImage.SymbolConfiguration(pointSize: 22, weight: .regular))
+        button.setImage(image, for: .normal)
+        button.tintColor = .white
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(infoTapped), for: .touchUpInside)
+        view.addSubview(button)
+        NSLayoutConstraint.activate([
+            button.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 12),
+            button.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
+        ])
+    }
+
+    @objc private func infoTapped() {
+        presenter?.infoTapped()
     }
 
     override func viewDidLayoutSubviews() {

@@ -24,6 +24,7 @@ protocol WeatherViewProtocol: AnyObject {
 protocol WeatherPresenterProtocol: AnyObject {
     func viewDidLoad()
     func retryTapped()
+    func infoTapped()
 }
 
 // MARK: - Interactor ← Presenter
@@ -46,4 +47,5 @@ protocol WeatherInteractorOutputProtocol: AnyObject {
 /// Responsible for module assembly and navigation.
 protocol WeatherRouterProtocol: AnyObject {
     static func buildModule() -> UIViewController
+    func showInfo(from viewController: UIViewController)
 }

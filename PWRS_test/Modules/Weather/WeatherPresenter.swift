@@ -31,6 +31,11 @@ final class WeatherPresenter: WeatherPresenterProtocol {
             await interactor?.fetchWeather()
         }
     }
+
+    func infoTapped() {
+        guard let vc = view as? UIViewController else { return }
+        router?.showInfo(from: vc)
+    }
 }
 
 // MARK: - WeatherInteractorOutputProtocol
