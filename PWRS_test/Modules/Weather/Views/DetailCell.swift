@@ -35,17 +35,17 @@ final class DetailCell: UIView {
         addSubview(valueLabel)
 
         NSLayoutConstraint.activate([
-            iconView.topAnchor.constraint(equalTo: topAnchor, constant: 14),
             iconView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 14),
             iconView.widthAnchor.constraint(equalToConstant: 18),
             iconView.heightAnchor.constraint(equalToConstant: 18),
+            iconView.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),
             titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 14),
             titleLabel.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 6),
             titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -14),
             valueLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 6),
             valueLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 14),
             valueLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -14),
-            valueLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -14)
+            valueLabel.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor, constant: -14)
         ])
     }
 

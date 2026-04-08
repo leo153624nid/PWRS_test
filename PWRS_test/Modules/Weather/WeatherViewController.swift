@@ -394,7 +394,7 @@ final class WeatherViewController: UIViewController {
         detailsGridView.subviews.forEach { $0.removeFromSuperview() }
         let detailItems: [(icon: String, title: String, value: String)] = [
             ("humidity", "ВЛАЖНОСТЬ", model.humidity),
-            ("wind.fill", "ВЕТЕР", "\(model.windSpeed)\n\(model.windDirection)"),
+            ("wind", "ВЕТЕР", "\(model.windSpeed), \(model.windDirection)"),
             ("gauge", "ДАВЛЕНИЕ", model.pressure),
             ("eye.fill", "ВИДИМОСТЬ", model.visibility),
             ("sun.max.fill", "УФ-ИНДЕКС", model.uvIndex)
@@ -481,115 +481,4 @@ extension WeatherViewController: UICollectionViewDataSource {
         }
         return cell
     }
-}
-
-// MARK: - HourlyCell
-
-final class HourlyCell: UICollectionViewCell {
-    static let reuseID = "HourlyCell"
-
-    private let timeLabel = UILabel()
-    private let iconImageView = UIImageView()
-    private let tempLabel = UILabel()
-    private let rainLabel = UILabel()
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        let stack = UIStackView(arrangedSubviews: [timeLabel, iconImageView, tempLabel, rainLabel])
-        stack.axis = .vertical
-        stack.spacing = 3
-        stack.alignment = .center
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(stack)
-
-        timeLabel.font = .systemFont(ofSize: 12, weight: .medium)
-        timeLabel.textColor = UIColor.white.withAlphaComponent(0.85)
-
-        iconImageView.contentMode = .scaleAspectFit
-        iconImageView.tintColor = .white
-        NSLayoutConstraint.activate([
-            iconImageView.widthAnchor.constraint(equalToConstant: 24),
-            iconImageView.heightAnchor.constraint(equalToConstant: 24)
-        ])
-
-        tempLabel.font = .systemFont(ofSize: 15, weight: .semibold)
-        tempLabel.textColor = .white
-
-        rainLabel.font = .systemFont(ofSize: 11)
-        rainLabel.textColor = UIColor.white.withAlphaComponent(0.7)
-
-        NSLayoutConstraint.activate([
-            stack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6),
-            stack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            stack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            stack.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -6)
-        ])
-    }
-
-    required init?(coder: NSCoder) { fatalError() }
-
-    func configure(with item: WeatherDisplayModel.HourlyDisplayItem) {
-        timeLabel.text = item.time
-        iconImageView.image = UIImage(systemName: WeatherIconMapper.sfSymbol(for: item.conditionCode, isDay: item.isDay))
-        tempLabel.text = item.temperature
-        rainLabel.text = item.chanceOfRain > 0 ? "\(item.chanceOfRain)%" : ""
-    }
-}
-
-// MARK: - DailyRowView
-
-final class DailyRowView: UIView {
-
-    init(item: WeatherDisplayModel.DailyDisplayItem) {
-        super.init(frame: .zero)
-        translatesAutoresizingMaskIntoConstraints = false
-
-        let dayLabel = UILabel()
-        dayLabel.text = item.dayName
-        dayLabel.font = .systemFont(ofSize: 17, weight: .medium)
-        dayLabel.textColor = .white
-        dayLabel.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(dayLabel)
-
-        let iconView = UIImageView()
-        iconView.image = UIImage(systemName: WeatherIconMapper.sfSymbol(for: item.conditionCode, isDay: true))
-        iconView.tintColor = .white
-        iconView.contentMode = .scaleAspectFit
-        iconView.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(iconView)
-
-        let rainLabel = UILabel()
-        if item.chanceOfRain > 0 {
-            rainLabel.text = "\(item.chanceOfRain)%"
-            rainLabel.textColor = UIColor(hex: "#90CAF9")
-        }
-        rainLabel.font = .systemFont(ofSize: 13)
-        rainLabel.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(rainLabel)
-
-        let tempLabel = UILabel()
-        tempLabel.text = "\(item.tempMax)  \(item.tempMin)"
-        tempLabel.font = .systemFont(ofSize: 17, weight: .medium)
-        tempLabel.textColor = .white
-        tempLabel.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(tempLabel)
-
-        NSLayoutConstraint.activate([
-            heightAnchor.constraint(equalToConstant: 52),
-            dayLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            dayLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
-            dayLabel.widthAnchor.constraint(equalToConstant: 90),
-            iconView.centerXAnchor.constraint(equalTo: centerXAnchor, constant: -20),
-            iconView.centerYAnchor.constraint(equalTo: centerYAnchor),
-            iconView.widthAnchor.constraint(equalToConstant: 26),
-            iconView.heightAnchor.constraint(equalToConstant: 26),
-            rainLabel.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 4),
-            rainLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
-            rainLabel.widthAnchor.constraint(equalToConstant: 36),
-            tempLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
-            tempLabel.centerYAnchor.constraint(equalTo: centerYAnchor)
-        ])
-    }
-
-    required init?(coder: NSCoder) { fatalError() }
 }
